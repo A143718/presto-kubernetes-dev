@@ -1,0 +1,122 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    presto: worker
+  name: worker
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        presto: worker
+    spec:
+      containers:
+      - env:
+        - name: HTTP_SERVER_PORT
+          value: "8080"
+        - name: PRESTO_JVM_HEAP_SIZE
+          value: "52"
+        - name: PRESTO_MAX_MEMORY
+          value: "80"
+        - name: PRESTO_MAX_MEMORY_PER_NODE
+          value: "20"
+        - name : COORDINATOR
+          value: "presto"
+        - name: HIVE_METASTORE_HOST
+          value: "****"
+        - name: HIVE_METASTORE_PORT
+          value: "9083"
+        - name: AWS_ACCESS_KEY_ID
+          value: "abc"
+        - name: AWS_SECRET_ACCESS_KEY_ID
+          value: "def"
+        - name: AZURE_STORAGE_ACCOUNT_NAME
+          value: "****"
+        - name: AZURE_STORAGE_ACCOUNT_KEY
+          value: "****"
+        - name: SQLSERVER_JDBC_URL
+          value: "****"
+        - name: SQLSERVER_USERNAME
+          value: "*****"
+        - name: SQLSERVER_PASSWORD
+          value: "***"
+        image: anchavesb/presto-azure:new
+        imagePullPolicy: Always
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 20
+        name: worker
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: coordinator
+  labels:
+    presto: coordinator
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        presto: coordinator
+    spec:
+      containers:
+      - env:
+        - name: HTTP_SERVER_PORT
+          value: "8080"
+        - name: PRESTO_JVM_HEAP_SIZE
+          value: "52"
+        - name: PRESTO_MAX_MEMORY
+          value: "80"
+        - name: PRESTO_MAX_MEMORY_PER_NODE
+          value: "20"
+        - name: HIVE_METASTORE_HOST
+          value: "****"
+        - name: HIVE_METASTORE_PORT
+          value: "9083"
+        - name: AWS_ACCESS_KEY_ID
+          value: "abc"
+        - name: AWS_SECRET_ACCESS_KEY_ID
+          value: "def"
+        - name: AZURE_STORAGE_ACCOUNT_NAME
+          value: "a140262pocbebf"
+        - name: AZURE_STORAGE_ACCOUNT_KEY
+          value: "****"          
+        - name: SQLSERVER_JDBC_URL
+          value: "****"
+        - name: SQLSERVER_USERNAME
+          value: "***"
+        - name: SQLSERVER_PASSWORD
+          value: "****"
+        image: anchavesb/presto-azure:new
+        imagePullPolicy: Always
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 20
+        name: presto-coordinator
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: presto
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  selector:
+    presto: coordinator
+  type: LoadBalancer
+  ports: 
+    - port: 8080

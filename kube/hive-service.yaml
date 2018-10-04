@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hive-metastore
+  annotations:                                                                    
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"    
+spec:
+  type: LoadBalancer
+  ports:
+    - name: client
+      port: 9083
+  selector:
+    hive: metastore
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    hive: metastore
+  name: metastore
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        hive: metastore
+    spec:
+      containers:
+      - env:
+        - name: AZURE_STORAGE_ACCOUNT_NAME
+          value: "****"
+        - name: AZURE_STORAGE_ACCOUNT_KEY
+          value: "***"
+        image: anchavesb/hive:2.3.3
+        imagePullPolicy: Always
+        name: hive-metastore
+        ports:
+        - containerPort: 9083
+      restartPolicy: Always
