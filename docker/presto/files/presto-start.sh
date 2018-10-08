@@ -5,6 +5,9 @@ export PRESTO_DIR=/opt/presto
 # Update config file with credentials for WASB and ADLS
 config=$PRESTO_DIR/etc/catalog/adls-wasb-site.xml
 
+AZURE_STORAGE_ACCOUNT_NAME=$(echo ${AZURE_STORAGE_ACCOUNT_NAME} | tr -d '\n')
+AZURE_STORAGE_ACCOUNT_KEY=$(echo ${AZURE_STORAGE_ACCOUNT_KEY} | tr -d '\n')
+
 sed -i -e "s/ADLS_TENANT_ID/${ADLS_TENANT_ID}/g" $config
 sed -i -e "s/ADLS_CLIENT_ID/${ADLS_CLIENT_ID}/g" $config
 sed -i -e "s#ADLS_CLIENT_SECRET#${ADLS_CLIENT_SECRET}#g" $config

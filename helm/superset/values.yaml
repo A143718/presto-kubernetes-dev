@@ -13,7 +13,7 @@ image:
 
 initFile: |-
   /usr/local/bin/superset-init --username admin --firstname admin --lastname user --email admin@fab.org --password admin
-  superset runserver
+  superset runserver -t 120
 
 configFile: |-
   #---------------------------------------------------------
@@ -39,6 +39,11 @@ configFile: |-
   SQLALCHEMY_DATABASE_URI = 'sqlite:////var/lib/superset/superset.db'
   
   SQLLAB_ASYNC_TIME_LIMIT_SEC = 60 * 60 * 6
+
+  SUPERSET_WEBSERVER_TIMEOUT = 120
+
+  FILTER_SELECT_ROW_LIMIT = 1000
+  VIZ_ROW_LIMIT = 1000
 
   # Flask-WTF flag for CSRF
   WTF_CSRF_ENABLED = True
@@ -94,7 +99,7 @@ persistence:
 ## ref: http://kubernetes.io/docs/user-guide/services/
 ##
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 9000
 
 ingress:

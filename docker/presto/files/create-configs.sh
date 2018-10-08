@@ -7,8 +7,8 @@ cat > $PRESTO_DIR/etc/node.properties <<EOF
 node.environment=production
 node.id=__uuidgen__
 node.data-dir=$PRESTO_DATA_DIR
-plugin.config-dir=/etc/presto/catalog
-plugin.dir=/usr/lib/presto/lib/plugin
+plugin.config-dir=/opt/presto/etc/catalog
+plugin.dir=/opt/presto/plugin
 node.server-log-file=/var/log/presto/server.log
 node.launcher-log-file=/var/log/presto/launcher.log
 EOF

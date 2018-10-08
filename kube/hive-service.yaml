@@ -28,9 +28,24 @@ spec:
       containers:
       - env:
         - name: AZURE_STORAGE_ACCOUNT_NAME
-          value: "****"
+          valueFrom:
+             secretKeyRef:
+               name: presto-secrets
+               key: account-name
         - name: AZURE_STORAGE_ACCOUNT_KEY
-          value: "***"
+          valueFrom:
+             secretKeyRef:
+               name: presto-secrets
+               key: account-key
+        - name: MYSQL_HOST
+          value: "ancillary-mysql"
+        - name: MYSQL_USERNAME
+          value: "root"
+        - name: MYSQL_PASSWORD
+          valueFrom:
+             secretKeyRef:
+               name: ancillary-mysql
+               key: mysql-root-password        
         image: anchavesb/hive:2.3.3
         imagePullPolicy: Always
         name: hive-metastore
